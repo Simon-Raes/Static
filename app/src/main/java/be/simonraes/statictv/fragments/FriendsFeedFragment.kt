@@ -34,7 +34,8 @@ class FriendsFeedFragment : Fragment() {
 
         ApiManager.getInstance(context)
                 .friendsFeed()
-                .subscribe { items -> setItems(items) }
+                .subscribe({ items -> setItems(items) },
+                        { error -> println(error) })
     }
 
     fun setItems(items: ArrayList<AbstractEvent>) {

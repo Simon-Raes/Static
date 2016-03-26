@@ -27,31 +27,30 @@ interface ApiService {
     fun getAccessToken(@Body data: TokenPostData): Observable<AccessToken>
 
 
+    // Sync
+
+    @GET("/sync/history")
+    fun history() = TODO()
+
+
     // Social
 
 
-    // todo interceptor
-
     @GET("/users/{username}/friends")
-    @Headers("Content-Type: application/json", "trakt-api-version: 2")
-    fun friends(@Path("username") userName: String, @Header("trakt-api-key") clientId: String): Observable<Array<Friend>>
+    fun friends(@Path("username") userName: String): Observable<Array<Friend>>
 
     @GET("/users/{username}/following")
-    @Headers("Content-Type: application/json", "trakt-api-version: 2")
-    fun following(@Path("username") userName: String, @Header("trakt-api-key") clientId: String): Observable<Array<Friend>>
+    fun following(@Path("username") userName: String): Observable<Array<Friend>>
 
 
     // todo cap at 10 for friends feed, use pagination (is tricky though) for friend feed
 
     @GET("/users/{username}/history")
-    @Headers("Content-Type: application/json", "trakt-api-version: 2")
-    fun history(@Path("username") userName: String, @Header("trakt-api-key") clientId: String, @Query("page") page: Int, @Query("limit") limit: Int): Observable<Array<HistoryEvent>>
+    fun history(@Path("username") userName: String, @Query("page") page: Int, @Query("limit") limit: Int): Observable<Array<HistoryEvent>>
 
     @GET("/users/{username}/comments")
-    @Headers("Content-Type: application/json", "trakt-api-version: 2")
-    fun comments(@Path("username") userName: String, @Header("trakt-api-key") clientId: String, @Query("page") page: Int, @Query("limit") limit: Int): Observable<Array<CommentEvent>>
+    fun comments(@Path("username") userName: String, @Query("page") page: Int, @Query("limit") limit: Int): Observable<Array<CommentEvent>>
 
     @GET("/users/{username}/ratings")
-    @Headers("Content-Type: application/json", "trakt-api-version: 2")
-    fun ratings(@Path("username") userName: String, @Header("trakt-api-key") clientId: String, @Query("page") page: Int, @Query("limit") limit: Int): Observable<Array<RatingEvent>>
+    fun ratings(@Path("username") userName: String, @Query("page") page: Int, @Query("limit") limit: Int): Observable<Array<RatingEvent>>
 }

@@ -12,6 +12,7 @@ import be.simonraes.statictv.model.oauth.RefreshTokenPostData
 import be.simonraes.statictv.model.oauth.TokenPostData
 import be.simonraes.statictv.model.social.Friend
 import be.simonraes.statictv.model.social.User
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -33,9 +34,14 @@ class ApiManager private constructor(val clientId: String,
 
     init {
 
+        val clientBuilder = OkHttpClient.Builder()
+        clientBuilder.interceptors().add(HeadersInterceptor(clientId))
+        val client = clientBuilder.build()
+
         val restBuilder = Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .client(client)
                 .baseUrl(API_BASE_URL)
 
         val restAdapter = restBuilder.build()
@@ -86,38 +92,39 @@ class ApiManager private constructor(val clientId: String,
     }
 
 
+    // Base calls
+
     /**
      * Social
      */
 
-    // Base calls
 
     fun friends(userName: String): Observable<Array<Friend>> {
-        return apiService.friends(userName, clientId)
+        return apiService.friends(userName)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun following(userName: String): Observable<Array<Friend>> {
-        return apiService.following(userName, clientId)
+        return apiService.following(userName)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun comments(userName: String): Observable<Array<CommentEvent>> {
-        return apiService.comments(userName, clientId, 1, 10)
+        return apiService.comments(userName, 1, 10)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun history(userName: String): Observable<Array<HistoryEvent>> {
-        return apiService.history(userName, clientId, 1, 10)
+        return apiService.history(userName, 1, 10)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun ratings(userName: String): Observable<Array<RatingEvent>> {
-        return apiService.ratings(userName, clientId, 1, 10)
+        return apiService.ratings(userName, 1, 10)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
     }
