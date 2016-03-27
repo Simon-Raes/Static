@@ -1,15 +1,21 @@
 package be.simonraes.statictv.api
 
 import android.content.Context
+import be.simonraes.statictv.PreferencesHelper
 import be.simonraes.statictv.R
+import be.simonraes.statictv.api.interceptors.AuthInterceptor
+import be.simonraes.statictv.api.interceptors.HeadersInterceptor
+import be.simonraes.statictv.api.services.ApiService
+import be.simonraes.statictv.api.services.AuthorizedApiService
+import be.simonraes.statictv.api.services.OAuthApiService
+import be.simonraes.statictv.getAccessToken
 import be.simonraes.statictv.model.event.AbstractEvent
 import be.simonraes.statictv.model.event.HistoryEvent
 import be.simonraes.statictv.model.event.RatingEvent
 import be.simonraes.statictv.model.item.CommentEvent
-import be.simonraes.statictv.model.oauth.AccessToken
+import be.simonraes.statictv.model.oauth.AccessTokens
 import be.simonraes.statictv.model.oauth.AccessTokenPostData
 import be.simonraes.statictv.model.oauth.RefreshTokenPostData
-import be.simonraes.statictv.model.oauth.TokenPostData
 import be.simonraes.statictv.model.social.Friend
 import be.simonraes.statictv.model.social.User
 import okhttp3.OkHttpClient
@@ -26,16 +32,34 @@ import java.util.*
  */
 class ApiManager private constructor(val clientId: String,
                                      val clientSecret: String,
-                                     val redirectUri: String) {
+                                     val redirectUri: String,
+                                     val accessToken: String) {
 
     val API_BASE_URL = "https://api-v2launch.trakt.tv"
 
     private val apiService: ApiService
+    private val oAuthApiService: OAuthApiService
+    private val authApiService: AuthorizedApiService
+
 
     init {
+        apiService = createApiService(ApiService::class.java)
+        oAuthApiService = createApiService(OAuthApiService::class.java, traktInfoHeaders = false)
+        authApiService = createApiService(AuthorizedApiService::class.java, authorized = true)
+    }
+
+
+    /**
+     * @param authorized Whether or not this ApiServices's calls should include the access token. Default is false.
+     * @param traktInfoHeaders Whether or not this ApiServices's calls should include the Trakt info headers. Default is true
+     */
+    fun <T> createApiService(apiService: Class<T>, authorized: Boolean = false, traktInfoHeaders: Boolean = true): T {
 
         val clientBuilder = OkHttpClient.Builder()
         clientBuilder.interceptors().add(HeadersInterceptor(clientId))
+        if (authorized) {
+            clientBuilder.interceptors().add(AuthInterceptor(accessToken))
+        }
         val client = clientBuilder.build()
 
         val restBuilder = Retrofit.Builder()
@@ -46,27 +70,36 @@ class ApiManager private constructor(val clientId: String,
 
         val restAdapter = restBuilder.build()
 
-        apiService = restAdapter.create(ApiService::class.java)
+        return restAdapter.create(apiService)
     }
 
 
-    // todo init this once (in application) so the rest doesn't have to pass in a context
 
     // Companion object for singleton
     companion object {
-        private var instance: ApiManager? = null
-        fun getInstance(context: Context): ApiManager {
-            if (instance == null) {
-                instance = ApiManager(context)
+        private var apiManager: ApiManager? = null
+        private var context: Context? = null
+
+        fun getInstance(): ApiManager {
+            context?.let {  if (apiManager == null) {
+                apiManager = ApiManager(it)
             }
 
-            return instance!!
+                return apiManager!!
+            }
+
+            throw RuntimeException("ApiManager must have been initialised from the Application class!")
+        }
+
+        fun init(context : Context){
+            this.context = context
         }
     }
 
     constructor(context: Context) : this(context.getString(R.string.client_id),
             context.getString(R.string.client_secret),
-            context.getString(R.string.redirect_uri))
+            context.getString(R.string.redirect_uri),
+            PreferencesHelper.getAccessToken(context))
 
 
     /**
@@ -74,22 +107,25 @@ class ApiManager private constructor(val clientId: String,
      */
 
 
-    fun accessToken(code: String): Observable<AccessToken> {
+    fun accessToken(code: String): Observable<AccessTokens> {
         val accessTokenPostData = AccessTokenPostData(code, clientId, clientSecret, redirectUri, "authorization_code")
 
-        return token(accessTokenPostData)
+        return oAuthApiService
+                .accessToken(accessTokenPostData)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
     }
 
-    // TODO: 06/03/16 refresh when needed
-    fun refreshToken(refreshToken: String, clientId: String, clientSecret: String, redirectUri: String): Observable<AccessToken> {
+    // TODO: 06/03/16 refresh when needed (before 3 months - or when 401 occurs?)
+    fun refreshToken(refreshToken: String, clientId: String, clientSecret: String, redirectUri: String): Observable<AccessTokens> {
         val refreshTokenPostData = RefreshTokenPostData(refreshToken, clientId, clientSecret, redirectUri, "authorization_code")
 
-        return token(refreshTokenPostData)
+        return oAuthApiService
+                .refreshToken(refreshTokenPostData)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
     }
 
-    private fun token(data: TokenPostData): Observable<AccessToken> {
-        return apiService.getAccessToken(data).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
-    }
 
 
     // Base calls

@@ -32,7 +32,7 @@ class FriendsFeedFragment : Fragment() {
         recyclerview_friends_feed.adapter = adapter
         recyclerview_friends_feed.layoutManager = LinearLayoutManager(context)
 
-        ApiManager.getInstance(context)
+        ApiManager.getInstance()
                 .friendsFeed()
                 .subscribe({ items -> setItems(items) },
                         { error -> println(error) })
