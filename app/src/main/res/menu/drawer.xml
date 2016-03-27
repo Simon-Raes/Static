@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+        <item
+            android:id="@+id/section_tv"
+            android:title="TV">
+
+            <menu>
+                <group android:checkableBehavior="single">
+
+                    <item
+                        android:id="@+id/drawer_calendar"
+                        android:title="Calendar"/>
+                </group>
+            </menu>
+
+        </item>
+
+
+        <item
+            android:id="@+id/section_social"
+            android:title="Social">
+
+            <menu>
+                <group android:checkableBehavior="single">
+
+                    <item
+                        android:id="@+id/drawer_friends"
+                        android:title="Friends"/>
+                </group>
+            </menu>
+        </item>
+
+        <item
+            android:id="@+id/section_discover"
+            android:title="Discover">
+
+            <menu>
+                <group android:checkableBehavior="single">
+
+                    <item
+                        android:id="@+id/drawer_trending"
+                        android:title="Trending"/>
+                </group>
+            </menu>
+        </item>
+
+
+
+</menu>
