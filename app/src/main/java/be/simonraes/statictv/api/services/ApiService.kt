@@ -19,8 +19,9 @@ interface ApiService {
 
     // Social
 
-
-    @GET("/users/{username}/friends")
+//    todo make request params more dynamic AND/OR don't always request the avatar
+    // can save avatar and only refresh when viewing person's profile
+    @GET("/users/{username}/friends?extended=images")
     fun friends(@Path("username") userName: String): Observable<Array<Friend>>
 
     @GET("/users/{username}/following")

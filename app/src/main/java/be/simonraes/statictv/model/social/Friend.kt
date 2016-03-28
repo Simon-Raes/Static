@@ -8,4 +8,5 @@ import com.google.gson.annotations.SerializedName
 class Friend(
         @SerializedName("friends_at")
         val friendsAt: String,
-        val user: User) {}
+        @SerializedName("user")
+        val user: User)

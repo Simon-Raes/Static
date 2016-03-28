@@ -176,8 +176,7 @@ class ApiManager private constructor(val clientId: String,
 
                         val friendsList: MutableList<Friend> = arrayListOf()
 
-
-                        val selfUser = User("Voshond", false, "You", false, false)
+                        val selfUser = User("Voshond", false, "You", false, false, null)
                         val self = Friend("", selfUser)
 
                         friendsList.add(self)

@@ -18,14 +18,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(toolbar_main)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu)
+        with(supportActionBar!!) {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_menu)
+        }
 
         navigation_view.setNavigationItemSelectedListener {
             it.setChecked(true)
 
             when (it.itemId) {
-            //todo fragment switch
                 R.id.drawer_calendar ->
                     supportFragmentManager
                             .beginTransaction()

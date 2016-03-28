@@ -25,13 +25,12 @@ class FriendsFeedAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.V
     val VIEWTYPE_COMMENT = 2
     val VIEWTYPE_HISTORY = 3
 
-
-    val layoutInflater: LayoutInflater = LayoutInflater.from(context)
+    val layoutInflater: LayoutInflater
     var items: ArrayList<AbstractEvent>? = null
 
-    //    init {
-    //        layoutInflater = LayoutInflater.from(context)
-    //    }
+    init {
+        layoutInflater = LayoutInflater.from(context)
+    }
 
     fun setData(items: ArrayList<AbstractEvent>) {
         this.items = items
@@ -44,8 +43,7 @@ class FriendsFeedAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.V
             is RatingEvent -> return VIEWTYPE_RATING
             is CommentEvent -> return VIEWTYPE_COMMENT
             is HistoryEvent -> return VIEWTYPE_HISTORY
-        // todo dummy type?
-            else -> return VIEWTYPE_COMMENT
+            else -> return -1
         }
     }
 
