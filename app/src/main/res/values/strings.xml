@@ -5,6 +5,7 @@
     <string name="section_tv">TV</string>
     <string name="item_calendar">Calendar</string>
     <string name="section_social">Social</string>
+    <string name="item_activity">Activity</string>
     <string name="item_friends">Friends</string>
     <string name="section_discover">Discover</string>
     <string name="item_trending">Trending</string>

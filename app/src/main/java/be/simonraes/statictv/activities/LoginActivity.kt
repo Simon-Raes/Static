@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
+import be.simonraes.statictv.BuildConfig
 import be.simonraes.statictv.PreferencesHelper
 import be.simonraes.statictv.R
 import be.simonraes.statictv.api.ApiManager
@@ -24,7 +25,7 @@ class LoginActivity : AppCompatActivity() {
         loginButton.setOnClickListener {
             val intent = Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("https://trakt.tv/oauth/authorize?response_type=code&client_id=" +
+                    Uri.parse(BuildConfig.SITE_BASE_URL + "oauth/authorize?response_type=code&client_id=" +
                             "${getString(R.string.client_id)}" +
                             "&redirect_uri=${getString(R.string.redirect_uri)}" +
                             "&state=12345679"))

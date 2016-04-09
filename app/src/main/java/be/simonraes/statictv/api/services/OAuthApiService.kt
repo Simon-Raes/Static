@@ -16,14 +16,14 @@ interface OAuthApiService {
     /**
      * @param data The data to post. Use AccessTokenPostData when requesting the first set of tokens.
      */
-    @POST("/oauth/token")
+    @POST("oauth/token")
     fun accessToken(@Body data: AccessTokenPostData): Observable<AccessTokens>
 
 
     /**
      * @param data The data to post. Use RefreshTokenPostData to refresh the access token.
      */
-    @POST("/oauth/token")
+    @POST("oauth/token")
     fun refreshToken(@Body data: RefreshTokenPostData): Observable<AccessTokens>
 
 

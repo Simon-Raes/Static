@@ -35,6 +35,8 @@
 
         <activity android:name=".activities.FriendsFeedActivity"/>
 
+        <activity android:name=".activities.ProfileActivity"/>
+
     </application>
 
 </manifest>

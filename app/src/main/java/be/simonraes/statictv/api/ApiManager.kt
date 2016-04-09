@@ -1,14 +1,13 @@
 package be.simonraes.statictv.api
 
 import android.content.Context
-import be.simonraes.statictv.PreferencesHelper
-import be.simonraes.statictv.R
+import be.simonraes.statictv.*
 import be.simonraes.statictv.api.interceptors.AuthInterceptor
 import be.simonraes.statictv.api.interceptors.HeadersInterceptor
 import be.simonraes.statictv.api.services.ApiService
 import be.simonraes.statictv.api.services.AuthorizedApiService
 import be.simonraes.statictv.api.services.OAuthApiService
-import be.simonraes.statictv.getAccessToken
+import be.simonraes.statictv.model.CalendarShowItem
 import be.simonraes.statictv.model.event.AbstractEvent
 import be.simonraes.statictv.model.event.HistoryEvent
 import be.simonraes.statictv.model.event.RatingEvent
@@ -17,8 +16,10 @@ import be.simonraes.statictv.model.oauth.AccessTokens
 import be.simonraes.statictv.model.oauth.AccessTokenPostData
 import be.simonraes.statictv.model.oauth.RefreshTokenPostData
 import be.simonraes.statictv.model.social.Friend
+import be.simonraes.statictv.model.social.Stats
 import be.simonraes.statictv.model.social.User
 import okhttp3.OkHttpClient
+import org.joda.time.DateTime
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -34,8 +35,6 @@ class ApiManager private constructor(val clientId: String,
                                      val clientSecret: String,
                                      val redirectUri: String,
                                      val accessToken: String) {
-
-    val API_BASE_URL = "https://api-v2launch.trakt.tv"
 
     private val apiService: ApiService
     private val oAuthApiService: OAuthApiService
@@ -56,7 +55,10 @@ class ApiManager private constructor(val clientId: String,
     fun <T> createApiService(apiService: Class<T>, authorized: Boolean = false, traktInfoHeaders: Boolean = true): T {
 
         val clientBuilder = OkHttpClient.Builder()
-        clientBuilder.interceptors().add(HeadersInterceptor(clientId))
+        if(traktInfoHeaders)
+        {
+            clientBuilder.interceptors().add(HeadersInterceptor(clientId))
+        }
         if (authorized) {
             clientBuilder.interceptors().add(AuthInterceptor(accessToken))
         }
@@ -66,13 +68,12 @@ class ApiManager private constructor(val clientId: String,
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(client)
-                .baseUrl(API_BASE_URL)
+                .baseUrl(BuildConfig.API_BASE_URL)
 
         val restAdapter = restBuilder.build()
 
         return restAdapter.create(apiService)
     }
-
 
 
     // Companion object for singleton
@@ -128,39 +129,56 @@ class ApiManager private constructor(val clientId: String,
 
 
 
-    // Base calls
+    // Authorized calls
+
+    fun calendarShows() : Observable<Array<CalendarShowItem>> {
+        return authApiService.calendarShows(DateUtils.firstDayOfMonth().toYyyyMmDdFormat(), DateTime().dayOfMonth().maximumValue)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+    }
+
+
+
+    // Basic calls
 
     /**
-     * Social
+     * Users
      */
 
 
     fun friends(userName: String): Observable<Array<Friend>> {
-        return apiService.friends(userName)
+        return authApiService.friends(userName)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun following(userName: String): Observable<Array<Friend>> {
-        return apiService.following(userName)
+        return authApiService.following(userName)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun comments(userName: String): Observable<Array<CommentEvent>> {
-        return apiService.comments(userName, 1, 10)
+        return authApiService.comments(userName, 1, 10)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun history(userName: String): Observable<Array<HistoryEvent>> {
-        return apiService.history(userName, 1, 10)
+        return authApiService.history(userName, 1, 10)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun ratings(userName: String): Observable<Array<RatingEvent>> {
-        return apiService.ratings(userName, 1, 10)
+        return authApiService.ratings(userName, 1, 10)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun stats(userName : String) :Observable<Stats>{
+        return authApiService
+                .stats(userName)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
     }
@@ -169,14 +187,14 @@ class ApiManager private constructor(val clientId: String,
     // Own merged data (naming)
 
     fun friendsFeed(includeself: Boolean = true): Observable<ArrayList<AbstractEvent>> {
-        return following("Voshond")
+        return following("me")
                 .flatMap { friends ->
 
                     if (includeself) {
 
                         val friendsList: MutableList<Friend> = arrayListOf()
 
-                        val selfUser = User("Voshond", false, "You", false, false, null)
+                        val selfUser = User("me", false, "You", false, false, null)
                         val self = Friend("", selfUser)
 
                         friendsList.add(self)

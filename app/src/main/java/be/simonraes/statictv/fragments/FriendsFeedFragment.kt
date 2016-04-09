@@ -29,8 +29,14 @@ class FriendsFeedFragment : AbstractRefreshFragment() {
         ApiManager.getInstance()
                 .friendsFeed()
                 .subscribe(
-                        { items -> adapter?.setData(items) },
-                        { error -> println(error) })
+                        { items ->
+                            adapter?.setData(items)
+                            refreshlayout_refresh.isRefreshing = false
+                        },
+                        { error ->
+                            println(error)
+                            refreshlayout_refresh.isRefreshing = false
+                        })
     }
 
 

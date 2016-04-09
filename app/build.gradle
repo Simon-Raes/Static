@@ -20,6 +20,26 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    flavorDimensions "api"
+
+    productFlavors {
+
+        production {
+            dimension "api"
+
+            buildConfigField "String", "API_BASE_URL", "\"https://api-v2launch.trakt.tv/\""
+            buildConfigField "String", "SITE_BASE_URL", "\"https://trakt.tv/\""
+        }
+
+        staging {
+            dimension "api"
+
+            buildConfigField "String", "API_BASE_URL", "\"https://api-staging.trakt.tv/\""
+            buildConfigField "String", "SITE_BASE_URL", "\"https://staging.trakt.tv/\""
+        }
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }

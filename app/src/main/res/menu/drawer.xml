@@ -1,46 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-        <item
-            android:id="@+id/section_tv"
-            android:title="@string/section_tv">
 
-            <menu>
-                <group android:checkableBehavior="single">
+    <item
+        android:id="@+id/wha"
+        android:title="TODO put this in the header">
 
-                    <item
-                        android:id="@+id/drawer_calendar"
-                        android:title="@string/item_calendar"/>
-                </group>
-            </menu>
-        </item>
+        <menu>
+            <group android:checkableBehavior="single">
 
-        <item
-            android:id="@+id/section_social"
-            android:title="@string/section_social">
+                <item
+                    android:id="@+id/drawer_login"
+                    android:title="LOGIN"/>
+            </group>
+        </menu>
+    </item>
 
-            <menu>
-                <group android:checkableBehavior="single">
 
-                    <item
-                        android:id="@+id/drawer_friends"
-                        android:title="@string/item_friends"/>
-                </group>
-            </menu>
-        </item>
+    <item
+        android:id="@+id/section_tv"
+        android:title="@string/section_tv">
 
-        <item
-            android:id="@+id/section_discover"
-            android:title="@string/section_discover">
+        <menu>
+            <group android:checkableBehavior="single">
 
-            <menu>
-                <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/drawer_calendar"
+                    android:title="@string/item_calendar"/>
+            </group>
+        </menu>
+    </item>
 
-                    <item
-                        android:id="@+id/drawer_trending"
-                        android:title="@string/item_trending"/>
-                </group>
-            </menu>
-        </item>
+    <item
+        android:id="@+id/section_social"
+        android:title="@string/section_social">
+
+        <menu>
+            <group android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/drawer_activity"
+                    android:title="@string/item_activity"/>
+                <item
+                    android:id="@+id/drawer_friends"
+                    android:title="@string/item_friends"/>
+            </group>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/section_discover"
+        android:title="@string/section_discover">
+
+        <menu>
+            <group android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/drawer_trending"
+                    android:title="@string/item_trending"/>
+            </group>
+        </menu>
+    </item>
 
 </menu>
