@@ -20,6 +20,16 @@ class CalendarGrid : View {
     var viewWidth = 0F
     var viewHeight = 0F
     var spacingHorizontal = 0F
+    var spacingVertical = 0F
+    val days = 31 // make this dynamic, can be 28 - 31
+    val columns = 7
+    val rows: Int
+
+    // Selected area
+    var midSectionStart = -1
+    var midSectionSEnd = -1
+    var midSectionForRow = -1
+
 
     constructor(context: Context) : this(context, null)
 
@@ -31,6 +41,11 @@ class CalendarGrid : View {
         paintText = Paint()
         paintText.color = ContextCompat.getColor(context, R.color.colorPrimaryDark)
         paintText.textSize = 50.toFloat()
+
+        val extraRow = if ((days % 7) > 0) 1 else 0
+
+        rows = days / 7 + extraRow
+
     }
 
 
@@ -41,27 +56,33 @@ class CalendarGrid : View {
         viewWidth = width.toFloat()
         viewHeight = height.toFloat()
         spacingHorizontal = viewWidth / 8
-
+        spacingVertical = viewHeight / 6
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-
-
         canvas.drawRect(0F, 0F, viewWidth, viewHeight, paintTest)
 
         val offSet = paintText.measureText("1")
 
-        // todo loops and stuff
+        var r = 1
+        var c = 1
+        for (i in 1..days) {
+            println(r)
+            println(c)
 
-        canvas.drawText("1", spacingHorizontal * 1 - offSet / 2, viewHeight / 4, paintText)
-        canvas.drawText("2", spacingHorizontal * 2 - offSet / 2, viewHeight / 4, paintText)
-        canvas.drawText("3", spacingHorizontal * 3 - offSet / 2, viewHeight / 4, paintText)
-        canvas.drawText("4", spacingHorizontal * 4 - offSet / 2, viewHeight / 4, paintText)
-        canvas.drawText("5", spacingHorizontal * 5 - offSet / 2, viewHeight / 4, paintText)
-        canvas.drawText("6", spacingHorizontal * 6 - offSet / 2, viewHeight / 4, paintText)
-        canvas.drawText("7", spacingHorizontal * 7 - offSet / 2, viewHeight / 4, paintText)
+            canvas.drawText(i.toString(), spacingHorizontal * c - offSet / 2, spacingVertical * r, paintText)
+
+            c++
+            if(c > columns){
+                // start from the left again on the next row
+                c = 1
+                r++
+            }
+
+        }
+
     }
 
 }
